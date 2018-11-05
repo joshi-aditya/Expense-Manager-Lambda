@@ -8,17 +8,19 @@ install: true
 
 script:
   - pwd
-  - npm install async
+  - cd webapp
+  - npm install aws-sdk
+  - ls -al
   - cd node_modules
   - ls -al
-  - cd ../
+  - cd ../../
   - ls -al
 
 after_success:
   - pwd
   - ls -al
   - mkdir codedeploy_artifact
-  - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip node_modules README.md
+  - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip webapp/node_modules webapp/lambda.js
   - ls -al
   - mv csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
   - ls -al
