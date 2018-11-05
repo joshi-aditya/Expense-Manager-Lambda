@@ -14,7 +14,7 @@ script:
   - cd ../
   - ls -al
 
-after success:
+after_success:
   - pwd
   - ls -al
   - mkdir codedeploy_artifact
