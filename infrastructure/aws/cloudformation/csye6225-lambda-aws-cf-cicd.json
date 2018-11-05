@@ -1,0 +1,52 @@
+{
+    "Parameters": {
+        "TravisUploadToS3PolicyName": {
+            "Type": "String"
+        },
+        "Resource1": {
+            "Type": "String"
+        },
+        "BucketName": {
+            "Description": "A S3 bucket name",
+            "Type": "String"
+        },
+        "ApplicationName": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "TravisUploadToS3Policy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject"
+                            ],
+                            "Resource": [
+                                "*"
+                            ]
+                        }
+                    ]
+                },
+                "Users": [
+                    "travis-ci"
+                ],
+                "ManagedPolicyName": {
+                    "Ref": "TravisUploadToS3PolicyName"
+                }
+            }
+        },
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Ref": "BucketName"
+                }
+            }
+        }
+    }
+}
