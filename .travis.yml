@@ -20,9 +20,11 @@ after_success:
   - pwd
   - ls -al
   - mkdir codedeploy_artifact
-  - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip webapp/node_modules webapp/lambda.js
+  - cd webapp
+  - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip node_modules lambda.js
   - ls -al
-  - mv csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
+  - cd ..
+  - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
   - ls -al
   - pwd
   - cd codedeploy_artifact
