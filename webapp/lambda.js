@@ -14,23 +14,6 @@ exports.handler = function (event, context, callback) {
     const uuidv1 = require('uuid/v1');
     var token = uuidv1();
 
-    //First check if the email is present in the table
-    var params = {
-        TableName: 'Credentials',
-        Key: {
-            'token': { S: "001" },
-        }
-    };
-
-    // Call DynamoDB to read the item from the table
-    ddb.getItem(params, function (err, data) {
-        if (err) {
-            console.log("Error", err);
-        } else {
-            console.log("Success", data.Item);
-        }
-    });
-
     var params = {
         TableName: 'Credentials',
         Item: {
