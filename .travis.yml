@@ -44,3 +44,15 @@ deploy:
     secret_access_key: $secret_access_key
     on:
       branch: assignment07-08
+  - provider: codedeploy
+    access_key_id: $access_key_id
+    bucket: $s3_bucket
+    key: csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
+    bundle_type: zip
+    application: lambda
+    deployment_group: $deployment_group
+    region: us-east-1
+    secret_access_key: $secret_access_key
+    wait-until-deployed: true
+    on:
+      branch: assignment07-08
