@@ -50,7 +50,7 @@ deploy:
     key: csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: lambda
-    deployment_group: $deployment_group
+    deployment_group: LambdaDeploymentGroup
     region: us-east-1
     secret_access_key: $secret_access_key
     wait-until-deployed: true
