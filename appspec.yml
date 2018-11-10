@@ -5,5 +5,5 @@ Resources:
       Properties:
         Name: "HelloWorld"
         Alias: "HelloWorldFunction"
-        CurrentVersion: "2"
-        TargetVersion: "3"
+        CurrentVersion: "1"
+        TargetVersion: "2"
