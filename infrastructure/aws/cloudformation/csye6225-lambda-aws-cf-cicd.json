@@ -1,21 +1,42 @@
 {
     "Parameters": {
-        "TravisUploadToS3PolicyName": {
-            "Type": "String"
-        },
         "Resource1": {
             "Type": "String"
         },
-        "BucketName": {
-            "Description": "A S3 bucket name",
+        "Resource2": {
             "Type": "String"
         },
-        "ApplicationName": {
+        "Resource3": {
             "Type": "String"
         }
     },
     "Resources": {
-        "TravisUploadToS3Policy": {
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "ManagedPolicyArns": [
+                    {
+                        "Ref": "LambdaExecutionPolicy"
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "LambdaExecutionPolicy": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
                 "PolicyDocument": {
@@ -24,28 +45,40 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "s3:PutObject"
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:GetItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan",
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:UpdateItem"
+                            ],
+                            "Resource": {
+                                "Ref": "Resource1"
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": {
+                                "Ref": "Resource2"
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
                             ],
                             "Resource": [
-                                "*"
+                                {
+                                    "Ref": "Resource3"
+                                }
                             ]
                         }
                     ]
                 },
-                "Users": [
-                    "travis-ci"
-                ],
-                "ManagedPolicyName": {
-                    "Ref": "TravisUploadToS3PolicyName"
-                }
-            }
-        },
-        "S3Bucket": {
-            "Type": "AWS::S3::Bucket",
-            "Properties": {
-                "BucketName": {
-                    "Ref": "BucketName"
-                }
+                "ManagedPolicyName": "LambdaExecutionPolicy"
             }
         }
     }
