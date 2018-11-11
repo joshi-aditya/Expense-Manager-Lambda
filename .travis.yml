@@ -34,13 +34,7 @@ after_success:
   - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip node_modules lambda.js
   - ls -al
   - cd ..
-  - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
+  - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip .
   - ls -al
   - pwd
-  - cd codedeploy_artifact
-  - ls -al
-  - pwd
-  - cd ..
-  - pwd
-  - ls -al
   - bash upload_lambda.sh
