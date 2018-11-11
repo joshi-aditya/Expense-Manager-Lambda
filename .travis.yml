@@ -1,12 +1,22 @@
 language: node_js
 node_js:
   - 8.10
+python:
+  - "2.7"
+  - "3.6"
 
 sudo: false
 
 install: true
 
+env:
+  global:
+  - access_key_id: $access_key_id
+  - secret_access_key: $secret_access_key
+  - region: us-east-1
+
 script:
+  - pip install --user awscli
   - pwd
   - cd webapp
   - npm install aws-sdk
@@ -33,3 +43,4 @@ after_success:
   - cd ..
   - pwd
   - ls -al
+  - bash upload_lambda.sh
