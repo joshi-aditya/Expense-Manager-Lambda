@@ -17,6 +17,7 @@ env:
 
 script:
   - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
   - pwd
   - cd webapp
   - npm install aws-sdk
