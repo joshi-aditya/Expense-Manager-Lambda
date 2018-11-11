@@ -97,12 +97,12 @@
                             ]
                         }
                     ]
-                }
-            },
-            "Users": [
-                "travis-ci"
-            ],
-            "ManagedPolicyName": "UploadLambdaPolicy"
+                },
+                "ManagedPolicyName": "UploadLambdaPolicy",
+                "Users": [
+                    "travis-ci"
+                ]
+            }
         }
     }
 }
