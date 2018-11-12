@@ -8,6 +8,24 @@
         },
         "Resource3": {
             "Type": "String"
+        },
+        "Resource4": {
+            "Type": "String"
+        },
+        "Resource5": {
+            "Type": "String"
+        },
+        "Resource6": {
+            "Type": "String"
+        },
+        "Resource7": {
+            "Type": "String"
+        },
+        "BucketName": {
+            "Type": "String"
+        },
+        "ApplicationName": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -102,6 +120,139 @@
                 "Users": [
                     "travis-ci"
                 ]
+            }
+        },
+        "TravisUploadToS3Policy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject"
+                            ],
+                            "Resource": [
+                                "*"
+                            ]
+                        }
+                    ]
+                },
+                "Users": [
+                    "travis-ci"
+                ],
+                "ManagedPolicyName": "Travis-Upload-To-Lambda-S3"
+            }
+        },
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Ref": "BucketName"
+                }
+            }
+        },
+        "TravisCodeDeployLambdaPolicy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "codedeploy:RegisterApplicationRevision",
+                                "codedeploy:GetApplicationRevision"
+                            ],
+                            "Resource": {
+                                "Ref": "Resource4"
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "codedeploy:CreateDeployment",
+                                "codedeploy:GetDeployment"
+                            ],
+                            "Resource": "*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": "codedeploy:GetDeploymentConfig",
+                            "Resource": [
+                                {
+                                    "Ref": "Resource5"
+                                },
+                                {
+                                    "Ref": "Resource6"
+                                },
+                                {
+                                    "Ref": "Resource7"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "Users": [
+                    "travis-ci"
+                ],
+                "ManagedPolicyName": "Travis-Code-Deploy-Lambda"
+            }
+        },
+        "CodeDeployLambdaServiceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "CodeDeployLambdaServiceRole",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "codedeploy.amazonaws.com"
+                                ]
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "DeploymentApplication": {
+            "Type": "AWS::CodeDeploy::Application",
+            "Properties": {
+                "ApplicationName": {
+                    "Ref": "ApplicationName"
+                },
+                "ComputePlatform": "Lambda"
+            }
+        },
+        "LambdaDeploymentGroup": {
+            "Type": "AWS::CodeDeploy::DeploymentGroup",
+            "Properties": {
+                "ApplicationName": {
+                    "Ref": "ApplicationName"
+                },
+                "DeploymentConfigName": "CodeDeployDefault.LambdaAllAtOnce",
+                "DeploymentGroupName": {
+                    "Ref": "ApplicationName"
+                },
+                "DeploymentStyle": {
+                    "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+                    "DeploymentType": "BLUE_GREEN"
+                },
+                "ServiceRoleArn": {
+                    "Fn::GetAtt": [
+                        "CodeDeployLambdaServiceRole",
+                        "Arn"
+                    ]
+                }
             }
         }
     }
