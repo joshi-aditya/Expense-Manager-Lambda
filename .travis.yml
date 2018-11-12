@@ -17,6 +17,9 @@ env:
 
 script:
   - pip install --user awscli
+  - aws configure set aws_access_key_id $access_key_id
+  - aws configure set aws_secret_access_key $secret_access_key
+  - aws configure set default.region us-east-1
   - aws configure list
   - export PATH=$PATH:$HOME/.local/bin
   - pwd
