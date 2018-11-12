@@ -5,7 +5,7 @@ python:
   - "2.7"
   - "3.6"
 
-sudo: required
+sudo: false
 
 install: true
 
@@ -16,7 +16,8 @@ env:
   - region: us-east-1
 
 script:
-  - sudo pip install --user awscli
+  - pip install --user awscli
+  - aws configure list
   - export PATH=$PATH:$HOME/.local/bin
   - pwd
   - cd webapp
