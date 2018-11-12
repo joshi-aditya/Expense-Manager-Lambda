@@ -4,9 +4,11 @@ echo $STACK_NAME
 account_id=$(aws sts get-caller-identity --query "Account" --output text)
 region=us-east-1
 application_name=csye6225-fall2018-lambda
-resource1="arn:aws:dynamodb:$region:$account_id:table/Credentials"
+dynamodb_table=Credentials
+function=HelloWorld
+resource1="arn:aws:dynamodb:$region:$account_id:table/$dynamodb_table"
 resource2="arn:aws:logs:$region:$account_id:*"
-resource3="arn:aws:logs:$region:$account_id:log-group:/aws/lambda/HelloWorld:*"
+resource3="arn:aws:logs:$region:$account_id:log-group:/aws/lambda/$function:*"
 
 STACK_ID=$(\aws cloudformation create-stack --stack-name ${STACK_NAME} \
 --template-body file://csye6225-lambda-aws-cf-cicd.json \
