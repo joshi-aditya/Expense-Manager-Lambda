@@ -38,5 +38,6 @@ after_success:
   - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip .
   - ls -al
   - pwd
+  - aws configure list
   - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
   - aws lambda update-function-code --zip-file=fileb://${filename} --region=us-east-1 --function-name=HelloWorld
