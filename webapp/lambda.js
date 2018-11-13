@@ -7,6 +7,14 @@ exports.handler = function(event, context, callback) {
     // Set the region 
     AWS.config.update({region: 'us-east-1'});
     
+    //Set the domain name from the environment variable
+    var domain = process.env.DOMAIN;
+    console.log("Domain is "+ domain);
+    if(null == domain)
+    {
+        domain = "example.com";
+    }
+
     var message = event.Records[0].Sns.Message;
     console.log('Message received from SNS:', message); 
     
@@ -16,8 +24,8 @@ exports.handler = function(event, context, callback) {
     const uuidv1 = require('uuid/v1');
     var token  = uuidv1();
     
-    var expiryTime = 1 * 60; //20 minutes
-    var ttl = (new Date).getTime() + expiryTime;
+    var expiryTime = 1 * 60 * 1000; //TODO : 20 minutes
+    var ttl = (new Date).getTime();
     
     const docClient = new AWS.DynamoDB.DocumentClient();
     
@@ -42,7 +50,8 @@ exports.handler = function(event, context, callback) {
                 
                 console.log("Current Time : " + (new Date).getTime());
                 console.log("TTL is : "+ data.Items[0].ttl);
-                if((data.Items[0].ttl - (new Date).getTime()) > expiryTime)
+                console.log("Difference is "+((new Date).getTime() - data.Items[0].ttl)/60000);
+                if(((new Date).getTime() - data.Items[0].ttl) > expiryTime)
                 {
                     console.log("Password reset link expired");
                     addCredentials();
@@ -84,14 +93,14 @@ exports.handler = function(event, context, callback) {
                         Message: {
                             Body: {
                                 Text: {
-                                    Data: "Your reset password link is : "
+                                    Data: "Your reset password link is : http://"+ domain +"/reset?email="+ message + "&token=" + token
                                 }
                             },
                             Subject: {
                                 Data: "Ses Test Email"
                             }
                         },
-                        Source: "donotreply@no-reply.csye6225-fall2018-kawitkars.me"
+                        Source: "donotreply@no-reply."+ domain
                     };
                 console.log('===SENDING EMAIL===');
                 var email = ses.sendEmail(eParams, function(err, data){
