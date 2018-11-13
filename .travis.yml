@@ -20,6 +20,7 @@ after_success:
   - pwd
   - ls -al
   - mkdir codedeploy_artifact
+  - cp infrastructure/aws/codedeploy/*.js codedeploy_artifact/
   - cd webapp
   - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip node_modules lambda.js
   - ls -al
