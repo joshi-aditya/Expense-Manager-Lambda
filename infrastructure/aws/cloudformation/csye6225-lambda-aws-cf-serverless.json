@@ -8,6 +8,9 @@
         },
         "FunctionName": {
             "Type": "String"
+        },
+        "LambdaRole": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -28,8 +31,9 @@
                 "Handler": "lambda",
                 "MemorySize": 1024,
                 "Role": {
-                    "Ref": ""
-                }
+                    "Ref": "LambdaRole"
+                },
+                "Runtime": "nodejs8.10"
             }
         }
     }

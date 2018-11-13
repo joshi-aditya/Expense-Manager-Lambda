@@ -31,7 +31,6 @@
     "Resources": {
         "LambdaExecutionRole": {
             "Type": "AWS::IAM::Role",
-            "RoleName": "LambdaExecutionRole",
             "Properties": {
                 "ManagedPolicyArns": [
                     {
@@ -52,7 +51,8 @@
                             "Action": "sts:AssumeRole"
                         }
                     ]
-                }
+                },
+                "RoleName": "LambdaExecutionRole"
             }
         },
         "LambdaExecutionPolicy": {
