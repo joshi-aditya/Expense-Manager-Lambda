@@ -17,6 +17,9 @@
                 "ManagedPolicyArns": [
                     {
                         "Ref": "LambdaExecutionPolicy"
+                    },
+                    {
+                        "Ref": "LambdaSESPolicy"
                     }
                 ],
                 "AssumeRolePolicyDocument": {
@@ -33,7 +36,8 @@
                             "Action": "sts:AssumeRole"
                         }
                     ]
-                }
+                },
+                "RoleName": "LambdaExecutionRole"
             }
         },
         "LambdaExecutionPolicy": {
@@ -102,6 +106,30 @@
                 "Users": [
                     "travis-ci"
                 ]
+            }
+        },
+        "LambdaSESPolicy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "ses:SendEmail",
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents",
+                                "ses:SendRawEmail"
+                            ],
+                            "Resource": [
+                                "*"
+                            ]
+                        }
+                    ]
+                },
+                "ManagedPolicyName": "LambdaSESPolicy"
             }
         }
     }
