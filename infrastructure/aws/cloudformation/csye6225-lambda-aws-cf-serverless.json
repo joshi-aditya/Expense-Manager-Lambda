@@ -1,0 +1,36 @@
+{
+    "Parameters": {
+        "BucketName": {
+            "Type": "String"
+        },
+        "FileName": {
+            "Type": "String"
+        },
+        "FunctionName": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "ResetPasswordLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {
+                        "Ref": "BucketName"
+                    },
+                    "S3Key": {
+                        "Ref": "FileName"
+                    }
+                },
+                "FunctionName" : {
+                    "Ref": "FunctionName"
+                },
+                "Handler": "lambda",
+                "MemorySize": 1024,
+                "Role": {
+                    "Ref": ""
+                }
+            }
+        }
+    }
+}
