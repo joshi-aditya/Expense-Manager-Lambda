@@ -50,7 +50,7 @@
                         "Protocol": "lambda"
                     }
                 ],
-                "DisplayName": "Reset_Password"
+                "TopicName": "Reset_Password"
             },
             "DependsOn": [
                 "ResetPasswordLambdaFunction"

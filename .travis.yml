@@ -50,7 +50,7 @@ after_success:
   - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
   - aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName
   - echo $function_name
-  - if [[ $function_name == "HelloWorld" ]];
+  - if [[ aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName == "HelloWorld" ]];
     then echo 'Success!';
     else echo 'Failure!';
     fi
