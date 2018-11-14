@@ -38,14 +38,31 @@ after_success:
   - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip node_modules lambda.js
   - ls -al
   - cd ..
-  - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip .
+  - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
   - ls -al
   - pwd
+  - cd codedeploy_artifact
+  - ls -al
+  - pwd
+  - cd ..
+  - pwd
+  - ls -al
   - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
-  - echo function_name=$(aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName --output text)
+  - aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName
   - echo $function_name
   - if [[ $function_name == "HelloWorld" ]];
     then echo 'Success!';
     else echo 'Failure!';
     fi
-  - aws lambda update-function-code --zip-file=fileb://${filename} --region=us-east-1 --function-name=HelloWorl
+  - aws lambda update-function-code --zip-file=fileb://codedeploy_artifact/${filename} --region=us-east-1 --function-name=HelloWorld
+
+deploy:
+  - provider: s3
+    local_dir: codedeploy_artifact
+    bucket: $s3_bucket
+    region: us-east-1
+    skip_cleanup: true
+    access_key_id: $access_key_id
+    secret_access_key: $secret_access_key
+    on:
+      all_branches: true

@@ -8,6 +8,9 @@
         },
         "Resource3": {
             "Type": "String"
+        },
+        "BucketName": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -130,6 +133,37 @@
                     ]
                 },
                 "ManagedPolicyName": "LambdaSESPolicy"
+            }
+        },
+        "TravisUploadToS3Policy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject"
+                            ],
+                            "Resource": [
+                                "*"
+                            ]
+                        }
+                    ]
+                },
+                "Users": [
+                    "travis-ci"
+                ],
+                "ManagedPolicyName": "Travis-Upload-To-Lambda-S3"
+            }
+        },
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {
+                    "Ref": "BucketName"
+                }
             }
         }
     }

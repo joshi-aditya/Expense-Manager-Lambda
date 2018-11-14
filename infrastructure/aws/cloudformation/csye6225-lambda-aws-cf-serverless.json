@@ -1,0 +1,76 @@
+{
+    "Parameters": {
+        "BucketName": {
+            "Type": "String"
+        },
+        "FileName": {
+            "Type": "String"
+        },
+        "FunctionName": {
+            "Type": "String"
+        },
+        "LambdaRole": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "ResetPasswordLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {
+                        "Ref": "BucketName"
+                    },
+                    "S3Key": {
+                        "Ref": "FileName"
+                    }
+                },
+                "FunctionName": {
+                    "Ref": "FunctionName"
+                },
+                "Handler": "lambda",
+                "MemorySize": 1024,
+                "Role": {
+                    "Ref": "LambdaRole"
+                },
+                "Runtime": "nodejs8.10"
+            }
+        },
+        "ResetPasswordTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Fn::GetAtt": [
+                                "ResetPasswordLambdaFunction",
+                                "Arn"
+                            ]
+                        },
+                        "Protocol": "lambda"
+                    }
+                ],
+                "DisplayName": "Reset_Password"
+            },
+            "DependsOn": [
+                "ResetPasswordLambdaFunction"
+            ]
+        },
+        "LambdaInvokePermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "Principal": "sns.amazonaws.com",
+                "SourceArn": {
+                    "Ref": "ResetPasswordTopic"
+                },
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "ResetPasswordLambdaFunction",
+                        "Arn"
+                    ]
+                }
+            }
+        }
+    }
+}
