@@ -48,6 +48,13 @@ after_success:
   - pwd
   - ls -al
   - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
+  - aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName
+  - function_name=$(aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName)
+  - echo $function_name
+  - if [[ $function_name == '"HelloWorld"' ]];
+    then echo 'Success!'; 
+    else echo 'Failure!'; 
+    fi
   - aws lambda update-function-code --zip-file=fileb://codedeploy_artifact/${filename} --region=us-east-1 --function-name=ResetPassword
 
 deploy:
