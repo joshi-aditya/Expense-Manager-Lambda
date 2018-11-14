@@ -25,7 +25,7 @@
                         "Ref": "FileName"
                     }
                 },
-                "FunctionName" : {
+                "FunctionName": {
                     "Ref": "FunctionName"
                 },
                 "Handler": "lambda",
@@ -34,6 +34,42 @@
                     "Ref": "LambdaRole"
                 },
                 "Runtime": "nodejs8.10"
+            }
+        },
+        "ResetPasswordTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Fn::GetAtt": [
+                                "ResetPasswordLambdaFunction",
+                                "Arn"
+                            ]
+                        },
+                        "Protocol": "lambda"
+                    }
+                ],
+                "DisplayName": "Reset_Password"
+            },
+            "DependsOn": [
+                "ResetPasswordLambdaFunction"
+            ]
+        },
+        "LambdaInvokePermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "Principal": "sns.amazonaws.com",
+                "SourceArn": {
+                    "Ref": "ResetPasswordTopic"
+                },
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "ResetPasswordLambdaFunction",
+                        "Arn"
+                    ]
+                }
             }
         }
     }
