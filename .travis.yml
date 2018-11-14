@@ -43,7 +43,8 @@ after_success:
   - pwd
   - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
   - function_name=aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName --output text
-  - if [ $function_name == "HelloWorld" ];
+  - echo $function_name
+  - if [[ $function_name == "HelloWorld" ]];
     then echo 'Success!';
     else echo 'Failure!';
     fi
