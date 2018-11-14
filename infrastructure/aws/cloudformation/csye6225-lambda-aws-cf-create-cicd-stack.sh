@@ -4,7 +4,7 @@ echo $STACK_NAME
 account_id=$(aws sts get-caller-identity --query "Account" --output text)
 region=us-east-1
 application_name=csye6225-fall2018-lambda
-dynamodb_table=Credentials
+dynamodb_table=csye6225
 function=ResetPassword
 resource1="arn:aws:dynamodb:$region:$account_id:table/$dynamodb_table"
 resource2="arn:aws:logs:$region:$account_id:*"

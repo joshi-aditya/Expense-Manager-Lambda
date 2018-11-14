@@ -28,7 +28,7 @@
                 "FunctionName": {
                     "Ref": "FunctionName"
                 },
-                "Handler": "lambda",
+                "Handler": "lambda.handler",
                 "MemorySize": 1024,
                 "Role": {
                     "Ref": "LambdaRole"
