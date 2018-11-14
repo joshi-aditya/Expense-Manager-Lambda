@@ -42,10 +42,10 @@ after_success:
   - ls -al
   - pwd
   - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
-  - function_name=$(aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName --output text)
+  - echo function_name=$(aws lambda get-function --function-name HelloWorld --query Configuration.FunctionName --output text)
   - echo $function_name
   - if [[ $function_name == "HelloWorld" ]];
     then echo 'Success!';
     else echo 'Failure!';
     fi
-  - #aws lambda update-function-code --zip-file=fileb://${filename} --region=us-east-1 --function-name=HelloWorld
+  - aws lambda update-function-code --zip-file=fileb://${filename} --region=us-east-1 --function-name=HelloWorl
