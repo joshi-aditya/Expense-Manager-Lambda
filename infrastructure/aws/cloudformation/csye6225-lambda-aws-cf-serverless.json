@@ -11,6 +11,9 @@
         },
         "LambdaRole": {
             "Type": "String"
+        },
+        "DomainName": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -25,11 +28,18 @@
                         "Ref": "FileName"
                     }
                 },
+                "Environment": {
+                    "Variables": {
+                        "DOMAIN": {
+                            "Ref": "DomainName"
+                        }
+                    }
+                },
                 "FunctionName": {
                     "Ref": "FunctionName"
                 },
                 "Handler": "lambda.handler",
-                "MemorySize": 1024,
+                "MemorySize": 512,
                 "Role": {
                     "Ref": "LambdaRole"
                 },

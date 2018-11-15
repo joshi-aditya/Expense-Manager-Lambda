@@ -9,7 +9,7 @@ file_name=$(aws s3api list-objects --bucket $bucket_name --query Contents[0].Key
 
 STACK_ID=$(\aws cloudformation create-stack --stack-name ${STACK_NAME} \
 --template-body file://csye6225-lambda-aws-cf-serverless.json \
---parameters ParameterKey=BucketName,ParameterValue=${bucket_name} ParameterKey=FunctionName,ParameterValue=${function} ParameterKey=LambdaRole,ParameterValue=${lambda_role} ParameterKey=FileName,ParameterValue=${file_name} \
+--parameters ParameterKey=BucketName,ParameterValue=${bucket_name} ParameterKey=FunctionName,ParameterValue=${function} ParameterKey=LambdaRole,ParameterValue=${lambda_role} ParameterKey=FileName,ParameterValue=${file_name} ParameterKey=DomainName,ParameterValue=${domain_name} \
 --capabilities CAPABILITY_IAM \
 --capabilities CAPABILITY_NAMED_IAM \
 | jq -r .StackId \
