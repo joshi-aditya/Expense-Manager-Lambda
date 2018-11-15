@@ -1,0 +1,86 @@
+{
+    "Parameters": {
+        "BucketName": {
+            "Type": "String"
+        },
+        "FileName": {
+            "Type": "String"
+        },
+        "FunctionName": {
+            "Type": "String"
+        },
+        "LambdaRole": {
+            "Type": "String"
+        },
+        "DomainName": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "ResetPasswordLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {
+                        "Ref": "BucketName"
+                    },
+                    "S3Key": {
+                        "Ref": "FileName"
+                    }
+                },
+                "Environment": {
+                    "Variables": {
+                        "DOMAIN": {
+                            "Ref": "DomainName"
+                        }
+                    }
+                },
+                "FunctionName": {
+                    "Ref": "FunctionName"
+                },
+                "Handler": "lambda.handler",
+                "MemorySize": 512,
+                "Role": {
+                    "Ref": "LambdaRole"
+                },
+                "Runtime": "nodejs8.10"
+            }
+        },
+        "ResetPasswordTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Fn::GetAtt": [
+                                "ResetPasswordLambdaFunction",
+                                "Arn"
+                            ]
+                        },
+                        "Protocol": "lambda"
+                    }
+                ],
+                "TopicName": "password_reset"
+            },
+            "DependsOn": [
+                "ResetPasswordLambdaFunction"
+            ]
+        },
+        "LambdaInvokePermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "Principal": "sns.amazonaws.com",
+                "SourceArn": {
+                    "Ref": "ResetPasswordTopic"
+                },
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "ResetPasswordLambdaFunction",
+                        "Arn"
+                    ]
+                }
+            }
+        }
+    }
+}

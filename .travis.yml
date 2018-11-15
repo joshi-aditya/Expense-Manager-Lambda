@@ -1,0 +1,67 @@
+language: node_js
+node_js:
+  - 8.10
+python:
+  - "2.7"
+  - "3.6"
+
+sudo: false
+
+install: true
+
+env:
+  global:
+  - access_key_id: $access_key_id
+  - secret_access_key: $secret_access_key
+  - region: us-east-1
+
+script:
+  - pip install --user awscli
+  - aws configure set aws_access_key_id $access_key_id
+  - aws configure set aws_secret_access_key $secret_access_key
+  - aws configure set default.region us-east-1
+  - export PATH=$PATH:$HOME/.local/bin
+  - pwd
+  - cd webapp
+  - npm install aws-sdk
+  - ls -al
+  - cd node_modules
+  - ls -al
+  - cd ../../
+  - ls -al
+
+after_success:
+  - pwd
+  - ls -al
+  - mkdir codedeploy_artifact
+  - cd webapp
+  - zip -r csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip node_modules lambda.js
+  - ls -al
+  - cd ..
+  - mv webapp/csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
+  - ls -al
+  - pwd
+  - cd codedeploy_artifact
+  - ls -al
+  - pwd
+  - cd ..
+  - pwd
+  - ls -al
+  - filename=csye6225-lambda-${TRAVIS_JOB_NUMBER}.zip
+  - function_name=$(aws lambda get-function --function-name ResetPassword --query Configuration.FunctionName)
+  - echo $function_name
+  - if [[ $function_name == '"ResetPassword"' ]];
+    then aws lambda update-function-code --zip-file=fileb://codedeploy_artifact/${filename} --region=us-east-1 --function-name=ResetPassword; echo 'Lambda Function Updated!'; 
+    else echo 'Failed to update Lambda Function. Lambda Function does not exist!'; 
+    fi
+
+deploy:
+  - provider: s3
+    local_dir: codedeploy_artifact
+    bucket: $s3_bucket
+    region: us-east-1
+    skip_cleanup: true
+    access_key_id: $access_key_id
+    secret_access_key: $secret_access_key
+    on:
+      all_branches: true
