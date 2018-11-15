@@ -1,7 +1,7 @@
 exports.handler = function(event, context, callback) {
     
     // Load the SDK for JavaScript
-    var AWS = require('aws-sdk');
+    var AWS = require('aws-sdk'); 
     //  var nodemailer = require('nodemailer');
     var ses = new AWS.SES();
     // Set the region 
@@ -21,15 +21,14 @@ exports.handler = function(event, context, callback) {
     //Added to make an entry to Dynamo DB
     //Create the DynamoDB service object
     var ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
+    
     const uuidv1 = require('uuid/v1');
     var token  = uuidv1();
     
     var expiryTime = 1; //1 minute TODO : 20 minutes
-    var ttl = (new Date).getTime();
+    var ttl = (new Date).getTime() + (1 * 60 * 1000); //Adding 20 mins to the current timestamp
     
     const docClient = new AWS.DynamoDB.DocumentClient();
-    
-    addCredentials(); 
     
     //First check if the email is present in the table
     var params = {
@@ -37,27 +36,29 @@ exports.handler = function(event, context, callback) {
             ExpressionAttributeValues: {":username": message},
             FilterExpression: "#username = :username and attribute_not_exists(Removed)",
             Limit: 20,
-            TableName: "csye6225"
+            TableName: "csye6225",
+            ScanIndexForward: false
         };
         
-    docClient.scan(params, function(err, data) {
+    docClient.scan(params, function(err, data) { 
             if (err) {
                 console.log("Error occured while fetching the record");
             } else if (data.Items.length == 0) {
                  
                addCredentials();     
-               //sendEmail();
+               sendEmail();
                 
             } else {
                 
-                console.log("### The ttl is " + data.Items[0].ttl);
-                var difference  = ((new Date).getTime() - data.Items[0].ttl)/1000/60;
+                console.log("The ttl is " + data.Items[0].ttl);
+                var createdTime = data.Items[0].ttl - (1 * 60 * 1000);
+                var difference  = ((new Date).getTime() - createdTime)/1000/60;
                 console.log("Difference is "+difference);
                 if(difference > expiryTime)
                 {
                     console.log("Password reset link expired");
                     addCredentials();
-                    //sendEmail();
+                    sendEmail();
                 }
                 else
                 { 
