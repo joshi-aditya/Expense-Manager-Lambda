@@ -24,10 +24,12 @@ exports.handler = function(event, context, callback) {
     const uuidv1 = require('uuid/v1');
     var token  = uuidv1();
     
-    var expiryTime = 1 * 60 * 1000; //TODO : 20 minutes
+    var expiryTime = 1; //1 minute TODO : 20 minutes
     var ttl = (new Date).getTime();
     
     const docClient = new AWS.DynamoDB.DocumentClient();
+    
+    addCredentials(); 
     
     //First check if the email is present in the table
     var params = {
@@ -35,27 +37,27 @@ exports.handler = function(event, context, callback) {
             ExpressionAttributeValues: {":username": message},
             FilterExpression: "#username = :username and attribute_not_exists(Removed)",
             Limit: 20,
-            TableName: "Credentials"
+            TableName: "csye6225"
         };
         
     docClient.scan(params, function(err, data) {
             if (err) {
                 console.log("Error occured while fetching the record");
             } else if (data.Items.length == 0) {
-                
+                 
                addCredentials();     
-               sendEmail();
+               //sendEmail();
                 
             } else {
                 
-                console.log("Current Time : " + (new Date).getTime());
-                console.log("TTL is : "+ data.Items[0].ttl);
-                console.log("Difference is "+((new Date).getTime() - data.Items[0].ttl)/60000);
-                if(((new Date).getTime() - data.Items[0].ttl) > expiryTime)
+                console.log("### The ttl is " + data.Items[0].ttl);
+                var difference  = ((new Date).getTime() - data.Items[0].ttl)/1000/60;
+                console.log("Difference is "+difference);
+                if(difference > expiryTime)
                 {
                     console.log("Password reset link expired");
                     addCredentials();
-                    sendEmail();
+                    //sendEmail();
                 }
                 else
                 { 
@@ -67,9 +69,9 @@ exports.handler = function(event, context, callback) {
     function addCredentials()
     {
        var params2 = {
-                      TableName: 'Credentials',
+                      TableName: 'csye6225',
                       Item: {
-                        'token' : {S: token},
+                        'id' : {S: token},
                         'username' : {S: message},
                         'ttl' : {S: "" + ttl}
                       }
@@ -97,7 +99,7 @@ exports.handler = function(event, context, callback) {
                                 }
                             },
                             Subject: {
-                                Data: "Ses Test Email"
+                                Data: "Reset Password Email"
                             }
                         },
                         Source: "donotreply@no-reply."+ domain
@@ -110,7 +112,6 @@ exports.handler = function(event, context, callback) {
                     }
                     else {
                         console.log("===EMAIL SENT===");
-                        console.log("EMAIL CODE END");
                         console.log('EMAIL: ', email);
                         console.log(data);
                         context.succeed(event);
