@@ -9,6 +9,7 @@ exports.handler = function(event, context, callback) {
     
     //Set the domain name from the environment variable
     var domain = process.env.DOMAIN;
+    domain = domain.substring(0,domain.length-1);
     console.log("Domain is "+ domain);
     if(null == domain)
     {
@@ -26,7 +27,7 @@ exports.handler = function(event, context, callback) {
     var token  = uuidv1();
     
     var expiryTime = 1; //1 minute TODO : 20 minutes
-    var ttl = (new Date).getTime() + (1 * 60 * 1000); //Adding 20 mins to the current timestamp
+    var ttl = (new Date).getTime() + (expiryTime * 60 * 1000); //Adding 20 mins to the current timestamp
     
     const docClient = new AWS.DynamoDB.DocumentClient();
     
@@ -50,8 +51,17 @@ exports.handler = function(event, context, callback) {
                 
             } else {
                 
-                console.log("The ttl is " + data.Items[0].ttl);
-                var createdTime = data.Items[0].ttl - (1 * 60 * 1000);
+                //Checking the records retrieved
+                var latestTTL = data.Items[0].ttl;
+                data.Items.forEach(function(item) {
+                    if(latestTTL < item.ttl)
+                    {
+                        latestTTL = item.ttl;
+                    }
+                 });
+                
+                console.log("The ttl is " + latestTTL);
+                var createdTime = latestTTL - (expiryTime * 60 * 1000);
                 var difference  = ((new Date).getTime() - createdTime)/1000/60;
                 console.log("Difference is "+difference);
                 if(difference > expiryTime)
